@@ -19,52 +19,58 @@ void r(const vector<vector<char>> &, string&, const int &, const int &, vector<s
 void getNeighbors(const vector<vector<char>>&, const int&, const int&, vector<pair<int, int>>&, vector<vector<bool>>&);
 
 int main() {
-	auto sta = chrono::system_clock::now();
-	boost::container::flat_set<string> words;
-	SetConsoleOutputCP(1251);
-	SetConsoleCP(1251);
-	ifstream in("dic.txt");
-	ifstream input("input.txt");
-	ofstream out("out.txt");
-	vector<string> dictionary;
-	while (!in.eof())
+	char F = 'R';
+	for (; F == 'R'; cin >> F)
 	{
-		string s;
-		in >> s;
-		dictionary.emplace_back(s);
-	}
-	in.close();
-	vector<vector<char>> matrix(5, vector<char>(5));
-	for (auto& i : matrix)
-		for (auto& j : i)
-			input >> j;
-	input.close();
-
-	//////////////////////////////////////////////
-	vector<future<boost::container::flat_set<string>>> futures;
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
+		auto sta = chrono::system_clock::now();
+		boost::container::flat_set<string> words;
+		SetConsoleOutputCP(1251);
+		SetConsoleCP(1251);
+		ifstream in("dic.txt");
+		//ifstream input("input.txt");
+		//ofstream out("out.txt");
+		vector<string> dictionary;
+		while (!in.eof())
 		{
-			futures.emplace_back(async(launch::deferred | launch::async, [&matrix, i = i, j = j, & dictionary]() {
-				boost::container::flat_set<string> result;
-				string s = "";
-				vector<vector<bool>> ready(5, vector<bool>(5, 0));
-				s += matrix[i][j];
-				ready[i][j] = true;
-				r(matrix, s, i, j, dictionary, ready, result);
-				return result;
-				}));
+			string s;
+			in >> s;
+			dictionary.emplace_back(s);
 		}
+		in.close();
+		vector<vector<char>> matrix(5, vector<char>(5));
+		for (auto& i : matrix)
+			for (auto& j : i)
+				cin >> j;
+		//input.close();
+
+		//////////////////////////////////////////////
+		vector<future<boost::container::flat_set<string>>> futures;
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				futures.emplace_back(async(launch::deferred | launch::async, [&matrix, i = i, j = j, &dictionary]() {
+					boost::container::flat_set<string> result;
+					string s = "";
+					vector<vector<bool>> ready(5, vector<bool>(5, 0));
+					s += matrix[i][j];
+					ready[i][j] = true;
+					r(matrix, s, i, j, dictionary, ready, result);
+					return result;
+					}));
+			}
+		}
+		for (auto& f : futures)words.merge(f.get());
+		vector<string> s;
+		for (auto& i : words)s.emplace_back(i);
+		sort(s.begin(), s.end(), [](const string& left, const string& right) {return left.size() > right.size(); });
+		cout << s.size() << endl;
+		for (auto i : s)cout << i << endl;
+		auto fin = chrono::system_clock::now();
+		cout << chrono::duration_cast<std::chrono::milliseconds>(fin - sta).count();
+		//out.close();
+		F = 'Q';
 	}
-	for (auto& f : futures)words.merge(f.get());
-	vector<string> s;
-	for (auto &  i : words)s.emplace_back(i);
-	sort(s.begin(), s.end(), [](const string& left, const string& right) {return left.size() > right.size(); });
-	cout << s.size() << endl;
-	for (auto i : s)cout << i << endl;
-	auto fin = chrono::system_clock::now();
-	cout << chrono::duration_cast<std::chrono::milliseconds>(fin - sta).count();
 	return 0;
 }
 
