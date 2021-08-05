@@ -10,4 +10,4 @@
 ```
 python main.py
 ```
-Select top-right edge and Down and bottom-left edge by LBM down
+Select top-right and bottom-left edge by LBM down
