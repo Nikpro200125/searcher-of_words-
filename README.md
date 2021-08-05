@@ -4,3 +4,9 @@
 - copliled exe
 - dictionary(Russian)
 - python OCR + mouse controlling
+
+
+## use
+```
+python main.py
+```
