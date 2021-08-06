@@ -10,7 +10,7 @@ import keyboard
 
 def main():
     filename = 'screen.png'
-    print('READYREADYREADYREADYREADY')
+    print('-----------------------------')
     mouse.wait(button=mouse.LEFT, target_types=mouse.DOWN)
     first_position = mouse.get_position()
     mouse.wait(button=mouse.LEFT, target_types=mouse.DOWN)
@@ -24,27 +24,26 @@ def main():
     pre_s = ''
     for i in range(0, 5):
         for j in range(0, 5):
-            im = image.crop((step_h * (j + 0.2), step_v * (i + 0.15), step_h * (j + 1 - 0.2), step_v * (i + 1 - 0.15)))
-            im.save(filename)
-            pre_s += (pytesseract.image_to_string(im, lang='rus', config='--psm 10')[0])
+            im = image.crop((step_h * (j + 0.25), step_v * (i + 0.15), step_h * (j + 1 - 0.15), step_v * (i + 1 - 0.18)))
+            # im.save('{}.png'.format(i * 5 + j))
+            pre_s += (pytesseract.image_to_string(im, lang='rus', config='--psm 10 --oem 3 -c tessedit_char_blacklist=().,{}|\/©1234567890[]-+@')[0])
     with open('input.txt', 'w') as out:
         out.write(pre_s.lower())
-    print(pre_s)
+    print(pre_s.lower())
     subprocess.Popen('szs.exe').wait()
     start_time = time.time()
-    time.sleep(0.6)
     with open("resultAuto.txt", 'r') as inp:
         for x in inp.readlines():
             if time.time() - start_time > 115 or keyboard.is_pressed('space'): break
             mouse.release(button=mouse.LEFT)
             mouse.move(first_position[0] + (int(x[1]) + 0.5) * step_h,
-                       first_position[1] + (int(x[0]) + 0.5) * step_v, duration=0.04)
+                       first_position[1] + (int(x[0]) + 0.5) * step_v, duration=0.05)
             mouse.press(button=mouse.LEFT)
             for i in range(2, len(x) - 1, 2):
                 mouse.move((int(x[i + 1]) - int(x[i - 1])) * step_h, (int(x[i]) - int(x[i - 2])) * step_v,
-                           absolute=False, duration=0.04)
+                           absolute=False, duration=0.05)
             mouse.release(button=mouse.LEFT)
-            time.sleep(0.25)
+            time.sleep(0.3)
 
 
 if __name__ == '__main__':
