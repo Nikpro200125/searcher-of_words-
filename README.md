@@ -1,4 +1,4 @@
-# searcher-of_words-
+# word search engine on NxN board 
 
 ## FINAL
 - copliled exe
